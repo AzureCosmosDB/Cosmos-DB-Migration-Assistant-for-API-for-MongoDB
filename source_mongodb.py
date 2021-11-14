@@ -20,10 +20,14 @@ class SourceMongoDB:
 
     def get_workload_info(self):
         self.workload_info.get_database_info()
+        self.workload_info.get_collection_info()
 
     def save_workload_info_to_csv(self):
         self.workload_info.save_database_info_to_csv()
+        self.workload_info.save_collection_info_to_csv()
 
     def print_workload_info(self):
         print("Workload database details: ")
         self.workload_info.print_database_info()
+        print("Workload collection details: ")
+        self.workload_info.print_collection_info()
