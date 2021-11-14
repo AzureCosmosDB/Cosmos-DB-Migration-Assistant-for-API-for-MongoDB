@@ -23,3 +23,7 @@ class SourceMongoDB:
 
     def save_workload_info_to_csv(self):
         self.workload_info.save_database_info_to_csv()
+
+    def print_workload_info(self):
+        print("Workload database details: ")
+        self.workload_info.print_database_info()
