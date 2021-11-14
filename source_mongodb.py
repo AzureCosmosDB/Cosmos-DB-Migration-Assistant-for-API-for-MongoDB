@@ -21,4 +21,5 @@ class SourceMongoDB:
     def get_workload_info(self):
         self.workload_info.get_database_info()
 
-
+    def save_workload_info_to_csv(self):
+        self.workload_info.save_database_info_to_csv()

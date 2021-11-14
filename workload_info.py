@@ -21,3 +21,14 @@ class WorkloadInfo:
             db_new.index_size = db_stats['indexSize']
             self.databases.append(db_new)
 
+    def save_database_info_to_csv(self):
+        filename = 'database_workload_details.csv'
+        try:
+            with open(filename, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(["Database Name", "Collection Count", "Document Count", "Average Doc Size", "Data Size", "Index Count", "Index Size"])
+                for db in self.databases:
+                    writer.writerow([db.database_name, db.collection_count, db.document_count, db.average_doc_size, db.data_size, db.index_count, db.index_size])
+        except BaseException as e:
+            print('BaseException:', filename)
+
