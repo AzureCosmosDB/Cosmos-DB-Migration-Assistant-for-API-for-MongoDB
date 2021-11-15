@@ -11,11 +11,15 @@ class WorkloadInfo:
     def get_database_info(self):
         db_cursor = self.client.list_databases()
         for db in db_cursor:
-            if db['name'] not in ['admin', 'config', 'local']:
+            if db['name'] not in ['admin', 'config', 'local', 'auto']:
                 db_stats = self.client.get_database(db['name']).command('dbStats')
                 db_new = Database()
                 db_new.database_name = db['name']
-                db_new.collection_count = db_stats['collections']
+                if 'raw' in db_stats:
+                    for shard in db_stats['raw']:
+                        db_new.collection_count+=db_stats['raw'][shard]['collections']
+                else:
+                    db_new.collection_count = db_stats['collections']
                 db_new.document_count = db_stats['objects']
                 db_new.average_doc_size = int(db_stats['avgObjSize'])
                 db_new.data_size = int(db_stats['dataSize'])
@@ -49,23 +53,32 @@ class WorkloadInfo:
                 collStats = self.client[db.database_name].command('collStats', col['name'])
                 col_new = Collection()
                 col_new.collection_name = col['name']
+                if 'sharded' in collStats:
+                    col_new.isSharded = collStats['sharded']
                 col_new.document_count = collStats['count']
-                col_new.average_doc_size = int(collStats['avgObjSize'])
+                if col_new.document_count != 0:
+                    col_new.average_doc_size = int(collStats['avgObjSize'])
                 col_new.data_size = int(collStats['size'])
                 col_new.index_count= collStats['nindexes']
-                col_new.indexes = collStats['indexDetails']
+                #col_new.indexes = collStats['indexDetails']
                 col_new.index_size = int(collStats['totalIndexSize'])
                 db.collections.append(col_new)
 
-    def save_collection_info_to_csv(self):
+    def save_collection_info_to_csv(self, isShardedEndpoint):
         filename = 'workload_collection_details.csv'
         try:
             with open(filename, 'w', newline='') as f:
                 writer = csv.writer(f)
-                writer.writerow(["DB Name", "Collection Name", "Doc Count", "Avg Doc Size", "Data Size", "Index Count", "Index Size"])
-                for db in self.databases:
-                    for col in db.collections:
-                        writer.writerow([db.database_name, col.collection_name, col.document_count, col.average_doc_size, col.data_size, col.index_count, col.index_size])
+                if isShardedEndpoint == False:
+                    writer.writerow(["DB Name", "Collection Name", "Doc Count", "Avg Doc Size", "Data Size", "Index Count", "Index Size"])
+                    for db in self.databases:
+                        for col in db.collections:
+                            writer.writerow([db.database_name, col.collection_name, col.document_count, col.average_doc_size, col.data_size, col.index_count, col.index_size])
+                elif isShardedEndpoint == True:
+                    writer.writerow(["DB Name", "Collection Name", "isSharded", "Doc Count", "Avg Doc Size", "Data Size", "Index Count", "Index Size"])
+                    for db in self.databases:
+                        for col in db.collections:
+                            writer.writerow([db.database_name, col.collection_name, col.isSharded, col.document_count, col.average_doc_size, col.data_size, col.index_count, col.index_size])
         except BaseException as e:
             print('BaseException:', filename)
 
