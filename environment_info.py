@@ -14,5 +14,3 @@ class EnvironmentInfo:
         elif ("enterprise" in  self.client.server_info()['modules']):
             self.license_type = "Enterprise"
 
-
-    
