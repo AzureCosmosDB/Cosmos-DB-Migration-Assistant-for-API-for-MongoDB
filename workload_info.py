@@ -60,9 +60,13 @@ class WorkloadInfo:
                     col_new.average_doc_size = int(collStats['avgObjSize'])
                 col_new.data_size = int(collStats['size'])
                 col_new.index_count= collStats['nindexes']
-                #col_new.indexes = collStats['indexDetails']
                 col_new.index_size = int(collStats['totalIndexSize'])
+
+                index_info = self.client[db.database_name][col['name']].index_information()
+                col_new.indexes = index_info
+
                 db.collections.append(col_new)
+
 
     def save_collection_info_to_csv(self, isShardedEndpoint):
         filename = 'workload_collection_details.csv'
@@ -70,15 +74,15 @@ class WorkloadInfo:
             with open(filename, 'w', newline='') as f:
                 writer = csv.writer(f)
                 if isShardedEndpoint == False:
-                    writer.writerow(["DB Name", "Collection Name", "Doc Count", "Avg Doc Size", "Data Size", "Index Count", "Index Size"])
+                    writer.writerow(["DB Name", "Collection Name", "Doc Count", "Avg Doc Size", "Data Size", "Index Count", "Index Size", "Indexes"])
                     for db in self.databases:
                         for col in db.collections:
-                            writer.writerow([db.database_name, col.collection_name, col.document_count, col.average_doc_size, col.data_size, col.index_count, col.index_size])
+                            writer.writerow([db.database_name, col.collection_name, col.document_count, col.average_doc_size, col.data_size, col.index_count, col.index_size, col.indexes])
                 elif isShardedEndpoint == True:
-                    writer.writerow(["DB Name", "Collection Name", "isSharded", "Doc Count", "Avg Doc Size", "Data Size", "Index Count", "Index Size"])
+                    writer.writerow(["DB Name", "Collection Name", "isSharded", "Doc Count", "Avg Doc Size", "Data Size", "Index Count", "Index Size", "Indexes"])
                     for db in self.databases:
                         for col in db.collections:
-                            writer.writerow([db.database_name, col.collection_name, col.isSharded, col.document_count, col.average_doc_size, col.data_size, col.index_count, col.index_size])
+                            writer.writerow([db.database_name, col.collection_name, col.isSharded, col.document_count, col.average_doc_size, col.data_size, col.index_count, col.index_size, col.indexes])
         except BaseException as e:
             print('BaseException:', filename)
 
