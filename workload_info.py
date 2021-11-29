@@ -2,6 +2,7 @@ from database import Database
 from collection import Collection
 import csv
 import pandas as pd
+from rules.assess_indexing_incompatibilities import *
 
 class WorkloadInfo:
     def __init__(self, client):
@@ -92,3 +93,8 @@ class WorkloadInfo:
         dfStyler = collections_df.style.set_properties(**{'text-align': 'left'})
         df = dfStyler.set_table_styles([dict(selector='th', props=[('text-align', 'left')])])
         display(df)
+
+
+    def assess_incompatibilities(self):
+        assess_indexing_incompatibilities(self)
+
