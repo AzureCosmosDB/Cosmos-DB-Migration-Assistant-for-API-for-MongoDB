@@ -2,7 +2,8 @@ from database import Database
 from collection import Collection
 import csv
 import pandas as pd
-from rules.assess_indexing_incompatibilities import *
+from rules.assess_unsupported_indexing_features import *
+from rules.assess_no_of_collections_per_db import *
 
 class WorkloadInfo:
     def __init__(self, client):
@@ -95,6 +96,11 @@ class WorkloadInfo:
         display(df)
 
 
-    def assess_incompatibilities(self):
-        assess_indexing_incompatibilities(self)
+    def assess_unsupported_features(self):
+        assess_unsupported_indexing_features(self)
 
+    def assess_partially_supported_features(self):
+        pass
+
+    def assess_limits(self):
+        assess_no_of_collections_per_db(self)

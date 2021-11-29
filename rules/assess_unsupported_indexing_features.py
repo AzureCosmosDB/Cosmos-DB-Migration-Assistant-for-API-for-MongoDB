@@ -1,4 +1,4 @@
 from .assess_text_index import *
 
-def assess_indexing_incompatibilities(self):
+def assess_unsupported_indexing_features(self):
     assess_text_index(self)
