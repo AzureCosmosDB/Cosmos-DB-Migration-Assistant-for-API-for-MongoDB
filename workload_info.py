@@ -4,6 +4,7 @@ import csv
 import pandas as pd
 from rules.assess_unsupported_indexing_features import *
 from rules.assess_no_of_collections_per_db import *
+from rules.assess_partially_supported_indexing_features import *
 
 class WorkloadInfo:
     def __init__(self, client):
@@ -100,7 +101,7 @@ class WorkloadInfo:
         assess_unsupported_indexing_features(self)
 
     def assess_partially_supported_features(self):
-        pass
+        assess_partially_supported_indexing_features(self)
 
     def assess_limits(self):
         assess_no_of_collections_per_db(self)
