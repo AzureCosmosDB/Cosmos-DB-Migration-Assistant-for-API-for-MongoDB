@@ -5,6 +5,7 @@ import pandas as pd
 from rules.assess_unsupported_indexing_features import *
 from rules.assess_no_of_collections_per_db import *
 from rules.assess_partially_supported_indexing_features import *
+from rules.assess_fixed_collection_size import *
 
 class WorkloadInfo:
     def __init__(self, client):
@@ -105,3 +106,4 @@ class WorkloadInfo:
 
     def assess_limits(self):
         assess_no_of_collections_per_db(self)
+        assess_fixed_collection_size(self)
