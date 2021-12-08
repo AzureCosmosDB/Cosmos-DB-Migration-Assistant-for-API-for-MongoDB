@@ -5,7 +5,7 @@ def assess_unique_index(self):
             for index in col.indexes.values():
                 # check if it is a unique index
                 if 'unique' in index.keys():
-                    print("Collection",col.collection_name,"in Database",db.database_name,"is using unique index.")
+                    print("Collection",col.collection_name,"in Database",db.database_name,"is using unique index. ",index)
                     unique_index_count+=1
 
     if unique_index_count!=0:

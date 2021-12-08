@@ -7,7 +7,7 @@ def assess_ttl_index(self):
                 if 'expireAfterSeconds' in index.keys():
                     # check if the field is other than _ts
                     if index['key'][0][0] != "_ts":
-                        print("Collection",col.collection_name,"in Database",db.database_name,"is using TTL index on a field.")
+                        print("Collection",col.collection_name,"in Database",db.database_name,"is using TTL index on a field. ",index)
                         ttl_index_count+=1
                     
     if ttl_index_count!=0:

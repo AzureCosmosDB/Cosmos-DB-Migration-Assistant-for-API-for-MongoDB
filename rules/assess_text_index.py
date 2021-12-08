@@ -5,7 +5,7 @@ def assess_text_index(self):
         for col in db.collections:
             for index in col.indexes.values():
                 if index['key'][0] == ('_fts', 'text'):
-                    print("Collection",col.collection_name,"in Database",db.database_name,"is using text index.")
+                    print("Collection",col.collection_name,"in Database",db.database_name,"is using text index. ",index)
                     text_index_col_count+=1
     if text_index_col_count!=0:
         text_index_msg = "Text indexes are not supported in Azure Cosmos DB API for MongoDB. "\

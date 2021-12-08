@@ -9,7 +9,7 @@ def assess_compound_index_nested_field(self):
                     for i, index_condition in enumerate(index['key']):
                         index_field = index_condition[0]
                         if "." in index_field:
-                            print("Collection",col.collection_name,"in Database",db.database_name,"is using compound index with nested field.")
+                            print("Collection",col.collection_name,"in Database",db.database_name,"is using compound index with nested field. ",index)
                             compound_index_nested_count+=1
                             break
                     
