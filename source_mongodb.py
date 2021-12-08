@@ -2,6 +2,9 @@ from environment_info import EnvironmentInfo
 from workload_info import WorkloadInfo
 from pymongo import MongoClient
 import pymongo
+import pandas as pd
+import io
+import csv
 
 class SourceMongoDB:
     def __init__(self, endpoint):
@@ -10,10 +13,28 @@ class SourceMongoDB:
         self.environment_info = EnvironmentInfo(self.client)
         self.workload_info = WorkloadInfo(self.client)
 
-
     def get_environment_info(self):
         self.environment_info.get_mongodb_version_and_license()
         self.environment_info.get_shard_details()
+
+    def save_environment_info_to_csv(self):
+        filename = 'environment_info.csv'
+        try:
+            with open(filename, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(["MongoDB version", self.environment_info.mongodb_version])
+                writer.writerow(["License Type", self.environment_info.license_type])
+                writer.writerow([])
+                if self.environment_info.isShardedEndpoint == True:
+                    writer.writerow(["Is Sharded endpoint", "Yes"])
+                    writer.writerow(["Shard details"])
+                elif self.environment_info.isShardedEndpoint == False:
+                    writer.writerow(["Is Sharded endpoint", "No"])
+        except BaseException as e:
+            print('BaseException:', filename)
+        if self.environment_info.isShardedEndpoint == True:
+            df = pd.DataFrame(self.environment_info.shardList)
+            df.to_csv('environment_info.csv', mode='a')
 
     def print_environment_info(self):
         print("MongoDB version: ", self.environment_info.mongodb_version)
