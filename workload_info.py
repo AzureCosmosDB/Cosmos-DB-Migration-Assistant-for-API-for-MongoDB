@@ -11,6 +11,9 @@ class WorkloadInfo:
     def __init__(self, client):
         self.databases = []
         self.client = client
+        self.assessment_result_unsupported = []
+        self.assessment_result_partially_supported = []
+        self.assessment_result_limits = []
 
     def get_database_info(self):
         db_cursor = self.client.list_databases()
@@ -99,11 +102,108 @@ class WorkloadInfo:
 
 
     def assess_unsupported_features(self):
+        print("Assessment for unsupported features begins...")
         assess_unsupported_indexing_features(self)
+        if self.assessment_result_unsupported == []:
+            print("Assessment for unsupported features completed. There were no results found for the checks we ran.")
+        else:
+            print("Assessment for unsupported features completed. Some results were found and will be printed once all the assessments complete.")
+
+    def save_assessment_result_unsupported(self):
+        filename = 'assessment_result.csv'
+        try:
+            with open(filename, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(["Category", "Sub-category", "DB Name", "Collection Name", "Index", "Message"])
+                for tuple in self.assessment_result_unsupported:
+                    if tuple[0] =="Text index":
+                        text_index_msg = "Text indexes are not supported in Azure Cosmos DB API for MongoDB. "\
+                            "Azure Cosmos DB is a crucial part of the Azure ecosystem and is well integrated with other Azure services like Azure Search which offer advanced search features like wildcard search etc. "\
+                            "We recommend using Azure Search for full text search functionalities."
+                        writer.writerow(["Unsupported feature",tuple[0],tuple[1],tuple[2],tuple[3],text_index_msg])
+                f.close()
+        except BaseException as e:
+            print('BaseException:', filename)
+
 
     def assess_partially_supported_features(self):
+        print("Assessment for partially supported features begins...")
         assess_partially_supported_indexing_features(self)
+        if self.assessment_result_partially_supported == []:
+            print("Assessment for partially supported features completed. There were no results found for the checks we ran.")
+        else:
+            print("Assessment for partially supported features completed. Some results were found and will be printed once all the assessments complete.")
+
+
+    def save_assessment_result_partially_supported(self):
+        filename = 'assessment_result.csv'
+        try:
+            with open(filename, 'a', newline='') as f:
+                writer = csv.writer(f)
+                for tuple in self.assessment_result_partially_supported:
+                    if tuple[0] =="Unique index":
+                        unique_index_msg = "Unique indexes can only be created on empty collections currently in Azure Cosmos DB API for MongoDB. "\
+                            "Please make sure you migrate the data to Cosmos DB after creating the index. "\
+                            "We are currently working on a fix to allow creating unique indexes on non-empty collections. This functionality will be available soon."
+                        writer.writerow(["Partially supported feature",tuple[0],tuple[1],tuple[2],tuple[3],unique_index_msg])
+                    elif tuple[0] == "Compound index with nested field":
+                        compound_index_nested_msg = "Compound indexes with nested fields are not fully supported in Azure Cosmos DB API for MongoDB. "\
+                            "If you are using compound index where the nested fields are docs (not arrays), you may raise a support ticket to enable the functionality."
+                        writer.writerow(["Partially supported feature",tuple[0],tuple[1],tuple[2],tuple[3],compound_index_nested_msg])
+                    elif tuple[0] == "Unique index with nested field":
+                        unique_index_nested_msg = "Unique indexes with nested fields are not fully supported in Azure Cosmos DB API for MongoDB. "\
+                            "If you are using unique index where the nested fields are docs (not arrays), you may raise a support ticket to enable the functionality."
+                        writer.writerow(["Partially supported feature",tuple[0],tuple[1],tuple[2],tuple[3],unique_index_nested_msg])
+                    elif tuple[0] == "TTL index":
+                        ttl_index_msg = "Currently TTL indexes can only be created on _ts field in Azure Cosmos DB API for MongoDB. "\
+                            "The _ts field is specific to Azure Cosmos DB and is not accessible from MongoDB clients. It is a reserved (system) property that contains the time stamp of the document's last modification. "\
+                            "We will soon be supporting TTL indexes on all fields."
+                        writer.writerow(["Partially supported feature",tuple[0],tuple[1],tuple[2],tuple[3],ttl_index_msg])
+                f.close()
+        except BaseException as e:
+            print('BaseException:', filename)
 
     def assess_limits(self):
+        print("Assessment for limits begins...")
         assess_no_of_collections_per_db(self)
         assess_fixed_collection_size(self)
+        if self.assessment_result_limits == []:
+            print("Assessment for limits completed. There were no results found for the checks we ran.")
+        else:
+            print("Assessment for limits completed. Some results were found.")
+
+
+    def save_assessment_result_limits(self):
+        filename = 'assessment_result.csv'
+        try:
+            with open(filename, 'a', newline='') as f:
+                writer = csv.writer(f)
+                for tuple in self.assessment_result_limits:
+                    if tuple[0] =="Unsharded collection exceeds fixed collection size limit":
+                        exceeds_fixed_collection_msg = "The maximum size of a fixed (unsharded) collection in Cosmos DB API for MongoDB is 20 GB. "\
+                            "This unsharded collection exceeds the limit. "\
+                            "You would either need to limit the data size of the unsharded collection to < 20GB or use sharded collection type."
+                        writer.writerow(["Limit warning",tuple[0],tuple[1],tuple[2],"",exceeds_fixed_collection_msg])
+                    elif tuple[0] == "Unsharded collection approaches fixed collection size limit":
+                        approaches_fixed_collection_msg = "The maximum size of a fixed (unsharded) collection in Cosmos DB API for MongoDB is 20 GB. "\
+                            "This unsharded collection is currently >15Gb in size and approaches the limit. "\
+                            "You would either need to limit the data size of the unsharded collection to < 20GB or use sharded collection type."
+                        writer.writerow(["Limit warning",tuple[0],tuple[1],tuple[2],"",approaches_fixed_collection_msg])
+                    elif tuple[0] == "Db has >25 collections":
+                        db_25_collections_msg = "We recommend a maximum of 25 collections per database if you are planning to use Shared database throughput. "\
+                            "This allows for better throughput sharing across collections. "\
+                            "You may increase the default limit of 25 collections in a Shared throughput database by raising a support request. "\
+                            "If you are planning to use dedicated throughput however, you can have up to 500 collections per database."
+                        writer.writerow(["Limit warning",tuple[0],tuple[1],"","",db_25_collections_msg])
+                f.close()
+        except BaseException as e:
+            print('BaseException:', filename)
+
+    def print_assessment_results(self):
+        print("\n")
+        print("Assessment results: ")
+        results_df = pd.read_csv("assessment_result.csv", keep_default_na=False)
+        results_df.index+=1
+        dfStyler = results_df.style.set_properties(**{'text-align': 'left'})
+        df = dfStyler.set_table_styles([dict(selector='th', props=[('text-align', 'left')])])
+        display(df)

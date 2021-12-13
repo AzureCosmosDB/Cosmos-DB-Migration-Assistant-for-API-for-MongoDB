@@ -3,7 +3,6 @@ from workload_info import WorkloadInfo
 from pymongo import MongoClient
 import pymongo
 import pandas as pd
-import io
 import csv
 
 class SourceMongoDB:
