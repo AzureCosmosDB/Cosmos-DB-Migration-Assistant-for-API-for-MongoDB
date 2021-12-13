@@ -170,7 +170,7 @@ class WorkloadInfo:
                     elif tuple[0] == "TTL index":
                         ttl_index_msg = "Currently TTL indexes can only be created on _ts field in Azure Cosmos DB API for MongoDB. "\
                             "The _ts field is specific to Azure Cosmos DB and is not accessible from MongoDB clients. It is a reserved (system) property that contains the time stamp of the document's last modification. "\
-                            "We will soon be supporting TTL indexes on all fields."
+                            "We will soon be supporting the creation of a TTL index on any field with a date object."
                         writer.writerow(["Partially supported feature",tuple[0],tuple[1],tuple[2],tuple[3],ttl_index_msg])
                 f.close()
         except BaseException as e:
