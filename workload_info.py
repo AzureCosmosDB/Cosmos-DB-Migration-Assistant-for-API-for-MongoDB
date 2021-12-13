@@ -6,6 +6,7 @@ from rules.assess_unsupported_indexing_features import *
 from rules.assess_no_of_collections_per_db import *
 from rules.assess_partially_supported_indexing_features import *
 from rules.assess_fixed_collection_size import *
+import math
 
 class WorkloadInfo:
     def __init__(self, client):
@@ -36,19 +37,31 @@ class WorkloadInfo:
 
     def save_database_info_to_csv(self):
         filename = 'workload_database_details.csv'
+        total_collection_count = total_doc_count = total_data_size = total_index_size = 0
         try:
             with open(filename, 'w', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(["DB Name", "Collection Count", "Doc Count", "Avg Doc Size", "Data Size", "Index Count", "Index Size"])
                 for db in self.databases:
+                    total_collection_count += db.collection_count
+                    total_doc_count += db.document_count
+                    total_data_size += db.data_size
+                    total_index_size += db.index_size
                     writer.writerow([db.database_name, db.collection_count, db.document_count, db.average_doc_size, db.data_size, db.index_count, db.index_size])
+                total_data_size = self.convert_size(total_data_size)
+                total_index_size = self.convert_size(total_index_size)
+                writer.writerow([])
+                writer.writerow(["TOTAL: ", total_collection_count, total_doc_count, "", total_data_size, "", total_index_size])
         except BaseException as e:
             print('BaseException:', filename)
 
+
+
     def print_database_info(self):
-        databases_df = pd.read_csv("workload_database_details.csv")
+        databases_df = pd.read_csv("workload_database_details.csv", keep_default_na=False)
         databases_df.index+=1
         dfStyler = databases_df.style.set_properties(**{'text-align': 'left'})
+        dfStyler = dfStyler.set_properties(subset=databases_df.index[-1], **{'font-weight': 'bold'})
         df = dfStyler.set_table_styles([dict(selector='th', props=[('text-align', 'left')])])
         display(df)
 
@@ -207,3 +220,12 @@ class WorkloadInfo:
         dfStyler = results_df.style.set_properties(**{'text-align': 'left'})
         df = dfStyler.set_table_styles([dict(selector='th', props=[('text-align', 'left')])])
         display(df)
+
+    def convert_size(self, size_bytes):
+        if size_bytes == 0:
+            return "0B"
+        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        i = int(math.floor(math.log(size_bytes, 1024)))
+        p = math.pow(1024, i)
+        s = round(size_bytes / p, 2)
+        return "%s %s" % (s, size_name[i])
