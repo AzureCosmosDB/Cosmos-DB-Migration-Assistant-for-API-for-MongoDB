@@ -4,6 +4,7 @@ from pymongo import MongoClient
 import pymongo
 import pandas as pd
 import csv
+from zipfile import ZipFile
 
 class SourceMongoDB:
     def __init__(self, endpoint):
@@ -57,3 +58,11 @@ class SourceMongoDB:
         self.workload_info.print_database_info()
         print("Workload collection details: ")
         self.workload_info.print_collection_info()
+
+    def zip_dma_outputs(self):
+        zipObj = ZipFile('DMA_outputs.zip', 'w')
+        zipObj.write('environment_info.csv')
+        zipObj.write('workload_database_details.csv')
+        zipObj.write('workload_collection_details.csv')
+        zipObj.write('assessment_result.csv')
+        zipObj.close()
