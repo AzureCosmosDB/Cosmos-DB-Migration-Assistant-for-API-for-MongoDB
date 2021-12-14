@@ -39,9 +39,9 @@ You can manually review the final DMA_output.zip file prior to sharing it with M
 - Python 3 (will be prompted for installation if not already available)
 - The client machine from where you are running DMA should have access to the source MongoDB endpoint either over private or public network over the specified IP or hostname.
 
-### Set-up steps
+### Setup steps
 
-- Download and install [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver15) on a machine that . 
+- Download and install [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver15) on the machine.
 - Clone the [DMA repo](https://github.com/AzureCosmosDB/Cosmos-DB-Migration-Assistant-for-API-for-MongoDB.git) locally on the machine. You can even do this from Azure Data Studio (ADS) as below by entering the repo url and clicking "Clone from URL"
 ![Clone Cosmos DB DMA repo](/images_for_setup_doc/dma_clone_repo.jpg "Clone DMA repo")
 - Once done, click on open repository and click ADS Notebooks icon on the left, that should bring up the Jupyter Notebook *database_migration_assistant.ipynb*.
