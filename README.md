@@ -27,7 +27,7 @@ Assessment results are printed as an output in the notebook as well as saved to 
 
 **Note**:
 
-- DMA does not modify any of the existing configuration, databases, collections or index, it only reads the environment and workload data.
+- DMA does not modify any of the existing configuration, databases, collections or index, it only reads the environment info and workload stats.
 - No data is automatically uploaded or sent to Microsoft at any step in the DMA notebook. The credentials you enter will only be used locally on your machine. \
 You can manually review the final DMA_output.zip file prior to sharing it with Microsoft representatives.
 
