@@ -70,22 +70,25 @@ class WorkloadInfo:
         for db in self.databases:
             col_cursor = self.client[db.database_name].list_collections()
             for col in col_cursor:
-                collStats = self.client[db.database_name].command('collStats', col['name'])
-                col_new = Collection()
-                col_new.collection_name = col['name']
-                if 'sharded' in collStats:
-                    col_new.isSharded = collStats['sharded']
-                col_new.document_count = collStats['count']
-                if col_new.document_count != 0:
-                    col_new.average_doc_size = int(collStats['avgObjSize'])
-                col_new.data_size = int(collStats['size'])
-                col_new.index_count= collStats['nindexes']
-                col_new.index_size = int(collStats['totalIndexSize'])
+                if col['type'] != "view":
+                    collStats = self.client[db.database_name].command('collStats', col['name'])
+                    col_new = Collection()
+                    col_new.collection_name = col['name']
+                    if 'sharded' in collStats:
+                        col_new.isSharded = collStats['sharded']
+                    col_new.document_count = collStats['count']
+                    if col_new.document_count != 0:
+                        col_new.average_doc_size = int(collStats['avgObjSize'])
+                    col_new.data_size = int(collStats['size'])
+                    col_new.index_count= collStats['nindexes']
+                    col_new.index_size = int(collStats['totalIndexSize'])
 
-                index_info = self.client[db.database_name][col['name']].index_information()
-                col_new.indexes = index_info
+                    index_info = self.client[db.database_name][col['name']].index_information()
+                    col_new.indexes = index_info
 
-                db.collections.append(col_new)
+                    db.collections.append(col_new)
+                else:
+                    pass
 
 
     def save_collection_info_to_csv(self, isShardedEndpoint):
