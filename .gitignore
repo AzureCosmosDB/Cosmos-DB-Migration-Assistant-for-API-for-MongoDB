@@ -1,3 +1,11 @@
+# DMA Generated outputs
+
+assessment_result.csv
+environment_info.csv
+workload_collection_details.csv
+workload_database_details.csv
+DMA_outputs.zip
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
