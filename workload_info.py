@@ -158,9 +158,9 @@ class WorkloadInfo:
                 writer = csv.writer(f)
                 for tuple in self.assessment_result_partially_supported:
                     if tuple[0] =="Unique index":
-                        unique_index_msg = "Unique indexes can only be created on empty collections currently in Azure Cosmos DB API for MongoDB. "\
-                            "Please make sure you migrate the data to Cosmos DB after creating the index. "\
-                            "We are currently working on a fix to allow creating unique indexes on non-empty collections. This functionality will be available soon."
+                        unique_index_msg = "Unique indexes need to be created while the collection is empty, before you move the data to Azure Cosmos DB API for MongoDB."\
+                            "Support for unique index on existing collections with data is available in preview for accounts that do not use Synapse Link or Continuous backup."\
+                            "Refer: https://docs.microsoft.com/en-us/azure/cosmos-db/mongodb/mongodb-indexing#unique-indexes"
                         writer.writerow(["Partially supported feature",tuple[0],tuple[1],tuple[2],tuple[3],unique_index_msg])
                     elif tuple[0] == "Compound index with nested field":
                         compound_index_nested_msg = "Compound indexes with nested fields are not fully supported in Azure Cosmos DB API for MongoDB. "\
