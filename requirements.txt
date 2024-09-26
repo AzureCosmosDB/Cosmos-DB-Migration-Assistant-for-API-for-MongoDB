@@ -1,3 +1,3 @@
-# This file is will be overwritten as a generated output of the
+# This file is overwritten as a generated output of the
 # venv.ps1 and venv.sh scripts.  See requirements.in for the
 # core set of python dependencies.
