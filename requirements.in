@@ -1,5 +1,9 @@
+# This file is used to generate the requirements.txt file;
+# see venv.ps1 and venv.sh for details.
 
-dnspython
-jupyter
-pandas
-pymongo
+dnspython>=2.6.1
+notebook>=7.2.2
+numpy>=2.1.1
+pandas>=2.2.3
+pymongo>=4.9.1
+zipp>=3.20.2

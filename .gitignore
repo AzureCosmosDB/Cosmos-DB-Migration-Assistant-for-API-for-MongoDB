@@ -1,3 +1,10 @@
+# cj
+
+**/*.pyc
+**/tmp/
+**/Scripts/
+**/venv/
+
 # DMA Generated outputs
 
 assessment_result.csv
